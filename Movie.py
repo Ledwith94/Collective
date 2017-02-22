@@ -60,5 +60,5 @@ class Movie(object):
                 i += 1
         return i
 
-    def get_random_user(self):
+    def mean_item_rating(self):
         return random.choice(self.ratings.keys())

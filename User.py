@@ -10,7 +10,8 @@ class User(object):
         self.num_rating = 0
         self.highest_rating = 0
         User.usercount += 1
-        self.neighbours = {}
+        self.neighbors = {}
+        self.mean_item = {}
 
     def add_rating(self, movie, rating):
         self.rating_dic[movie] = rating
@@ -30,10 +31,11 @@ class User(object):
     def has_rating_for(self, movie):
         return self.rating_dic.has_key(movie)
 
-    def find_neighbours(self):
-        for key, val in self.rating_dic.items():
-            for users, rating in key.ratings.items():
-                if self.neighbours.get(users) is None:
-                    self.neighbours[users] = 0
-                new_val = int(self.neighbours[users].get()) - val
-                self.neighbours[users] = new_val
+    def set_mean_item(self,key, val):
+        self.mean_item[key] = val
+
+    def add_neighbor(self, key, val):
+        self.neighbors[key] = val
+
+    def has_neighbor(self, user):
+        return self.neighbors.has_key(user)

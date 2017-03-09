@@ -25,7 +25,7 @@ class Main:
         self.stats_dict = {}
         self.csv_name = None
 
-    def data(self): #Task 1
+    def data(self): #Task 1 Strips all data and creates objects for all users and items
         data_file = open(self.data_file, 'r')
         for line in data_file:
             user = str(line).split(',')[0]
@@ -42,7 +42,7 @@ class Main:
         for x in self.users.values():
             x.set_mean_rating()
 
-    def mean_item_rating(self): #Task 1
+    def mean_item_rating(self): #Task 1 gets the mean rating for each user-item pair over all users
         for key, val in self.movies.items():
             add = sum(val.ratings.itervalues())
             mean = len(val.ratings) - 1
@@ -55,7 +55,7 @@ class Main:
                     obj.set_mean_item(key, float(add) / float(mean))
                     add += sub
 
-    def n_mean_item_rating(self, user):
+    def n_mean_item_rating(self, user): # gets the mean rating for each user-item pair using the neighbourhood
         for key in user.rating_dic.keys():
             add = 0
             mean = 0
@@ -66,7 +66,7 @@ class Main:
             if mean is not 0 or add is not 0:
                 user.n_mean_item[key] = (float(add) / float(mean))
 
-    def coverage(self, outname, group): #Task 2
+    def leave_one_out_tests(self, outname, group): #Task 2 Performs all L1O tests
         test_data = 0.0
         cant_test = 0.0
         rmse_list = 0
@@ -119,13 +119,13 @@ class Main:
         print "Mean RMSE: " + str(mean_rmse) + "\n"
         self.stats_dict[group+" " +str(self.csv_name)] = [str(percentage_covered), str(mean_rmse)]
 
-    def rmse(self, predictions, targets): #Task 2
+    def rmse(self, predictions, targets): #Task 2 Gets the RMSE for each prediction
             differences = float(predictions) - float(targets)
             differences_squared = differences ** 2
             rmse_val = sqrt(differences_squared)
             return rmse_val
 
-    def cosine_similarity(self, x, y): #task 3
+    def cosine_similarity(self, x, y): #task 3 Cosine similarity function
         common = x.get_common_movies(y)
         if len(common) == 0:
             return 0
@@ -138,7 +138,7 @@ class Main:
             denominatory += y.get_rating_for(movies) ** 2
         return numerator / float(sqrt(denominatorx)) * float(sqrt(denominatory))
 
-    def resnicsks(self, user, movie): #task 4
+    def resnicsks(self, user, movie): #task 4 Resnick's prediction formula
         mean = user.mean_rating
         add = 0.0
         sim = 0.0
@@ -151,7 +151,7 @@ class Main:
         else:
             return mean + add / sim
 
-    def pearsons(self, x, y): #task 3
+    def pearsons(self, x, y): #task 3 Pearson's similarity function
         common = x.get_common_movies(y)
         x_mean = x.get_mean_rating()
         y_mean = y.get_mean_rating()
@@ -173,7 +173,7 @@ class Main:
         else:
             return 0
 
-    def neighbours(self, function, size): #Task 3
+    def neighbours(self, function, size): #Task 3 Generates neighbourhoods depending on what similarity function used
         if size <= 1:
             self.min_diff = -size
             self.max_diff = size
@@ -205,7 +205,7 @@ class Main:
                             user1.neighbours[user2] = similarity
                             user2.neighbours[user1] = similarity
 
-    def stats(self): #task 1
+    def stats(self): #task 1 Produces all stats on all users along with the results from techniques used
         for user in self.users.values():
             print "\nUser ID: " + str(user.user_id)
             print "Films Rated: " + str(user.get_rating_count())
@@ -273,207 +273,26 @@ args = argparser.parse_args()
 main = Main(args.data)
 main.data()
 main.mean_item_rating() #task 1
-main.coverage("Colab", "Task2") #task 2
-startTime = datetime.datetime.now()
-#
-# if args.cosine is not None:
-#     main.reset()
-#     main.neighbours("cosine", args.cosine)
-#     main.coverage("Colab_n" + str(args.cosine) + "_cosine", "Task3")
-#
-# if args.pearsons is not None:
-#     main.reset()
-#     main.neighbours("pearsons", args.pearsons)
-#     main.coverage("Colab_n"+str(args.pearsons)+"_pearsons", "Task3")
-#
-# if args.pearsons is not None and args.resnick:
-#     main.coverage("Colab_n"+str(args.pearsons)+"_resnicks", "Task4")
-# elif args.pearsons is None and args.resnick:
-#     print "Must use -p with a value between 0 and 1 (exclusive) to use resnicks"
-#
-# if args.stats is True:
-#     main.stats()
-#
-# print "Time taken: " + str(datetime.datetime.now() - startTime)
-
-
-# Below contains all code used to produce graphs
-# in the final report. Comment out to run
-
-
-# main = Main("Colab_data")
-# main.data() #task 1
-# main.mean_item_rating() #task 1
-# main.coverage("Colab.csv", "Task2") #task 2
-# #main.neighbours("pearsons") #task 3
-# # main.neighbours("cosine", 100) #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# main.stats() #task 1
-#
-# startTime = datetime.datetime.now()
-
-# main.neighbours("cosine", 25) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken  n = 25: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 50) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken  n = 50: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 75) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 75: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 100) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken  n = 100: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 125) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken  n = 125: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 150) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 150: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 175) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 175: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 200) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 200: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 250) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 250: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 300) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 300: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-#
-# main.neighbours("cosine", 400) #task 3
-# main.coverage("Colab_n", "Task3") #task 3
-# #main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-# print "Time taken n = 400: " + str(datetime.datetime.now() - startTime)
-# main.reset()
-#
-# startTime = datetime.datetime.now()
-
-# main.stats() #task 1
-
-main.neighbours("pearsons", .5) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken  n = .5: " + str(datetime.datetime.now() - startTime)
-main.reset()
+main.leave_one_out_tests("Colab", "Task2") #task 2
 startTime = datetime.datetime.now()
 
-main.neighbours("pearsons", .55) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .55: " + str(datetime.datetime.now() - startTime)
-main.reset()
+if args.cosine is not None:
+    main.reset()
+    main.neighbours("cosine", args.cosine)
+    main.leave_one_out_tests("Colab_n" + str(args.cosine) + "_cosine", "Task3")
 
-startTime = datetime.datetime.now()
+if args.pearsons is not None:
+    main.reset()
+    main.neighbours("pearsons", args.pearsons)
+    main.leave_one_out_tests("Colab_n" + str(args.pearsons) + "_pearsons", "Task3")
 
-main.neighbours("pearsons", .6) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken  n = .6: " + str(datetime.datetime.now() - startTime)
-main.reset()
+if args.pearsons is not None and args.resnick:
+    main.leave_one_out_tests("Colab_n" + str(args.pearsons) + "_resnicks", "Task4")
+elif args.pearsons is None and args.resnick:
+    print "Must use -p with a value between 0 and 1 (exclusive) to use resnicks"
 
-startTime = datetime.datetime.now()
+if args.stats is True:
+    main.stats()
 
-main.neighbours("pearsons", .65) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken  n = .65: " + str(datetime.datetime.now() - startTime)
-main.reset()
+print "Time taken: " + str(datetime.datetime.now() - startTime)
 
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .7) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .7: " + str(datetime.datetime.now() - startTime)
-main.reset()
-
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .75) #task 3
-main.coverage("Colab_n100.csv", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .75: " + str(datetime.datetime.now() - startTime)
-main.reset()
-
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .8) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .8: " + str(datetime.datetime.now() - startTime)
-main.reset()
-
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .85) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .85: " + str(datetime.datetime.now() - startTime)
-main.reset()
-
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .9) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .9: " + str(datetime.datetime.now() - startTime)
-main.reset()
-
-startTime = datetime.datetime.now()
-
-main.neighbours("pearsons", .95) #task 3
-main.coverage("Colab_n", "Task3") #task 3
-main.coverage("Colab_n100_resnicks.csv", "Task4") #task 4
-print "Time taken n = .95: " + str(datetime.datetime.now() - startTime)

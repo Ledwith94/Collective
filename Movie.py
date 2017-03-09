@@ -32,7 +32,7 @@ class Movie(object):
         return self.mean
 
     def rating_count(self):
-        return len(self.get_rating())
+        return len(self.ratings)
 
     def get_median(self):
         median_list = self.ratings.values()
